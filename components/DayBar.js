@@ -1,8 +1,7 @@
 'use client';
 
 import { timeToMinutes } from '@/lib/dates';
-
-const COLORS = ['#4f6ef7', '#38b2ac', '#805ad5', '#ed8936', '#e53e3e'];
+import { SCHEDULE_COLORS } from '@/components/scheduleColors';
 
 export default function DayBar({ sessions, onSelect }) {
   const todaySessions = sessions.filter((s) => s.work_date);
@@ -26,7 +25,7 @@ export default function DayBar({ sessions, onSelect }) {
           const endMin = timeToMinutes(s.end_time);
           const left = (startMin / 1440) * 100;
           const width = Math.max(((endMin - startMin) / 1440) * 100, 3);
-          const color = COLORS[i % COLORS.length];
+          const color = SCHEDULE_COLORS[i % SCHEDULE_COLORS.length];
           const label = s.title.length > 4 ? s.title.slice(0, 4) : s.title;
 
           return (
@@ -56,7 +55,7 @@ export default function DayBar({ sessions, onSelect }) {
           <div key={s.id} className="flex items-center gap-1.5 text-[11px] text-[#666]">
             <span
               className="h-2.5 w-2.5 rounded-sm"
-              style={{ background: COLORS[i % COLORS.length] }}
+              style={{ background: SCHEDULE_COLORS[i % SCHEDULE_COLORS.length] }}
             />
             {s.start_time?.slice(0, 5)} {s.title}
           </div>

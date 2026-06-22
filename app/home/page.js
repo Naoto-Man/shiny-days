@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import DayBar from '@/components/DayBar';
+import WeekScheduleView from '@/components/WeekScheduleView';
+import MonthScheduleView from '@/components/MonthScheduleView';
+import CompactWorkList from '@/components/CompactWorkList';
 import { Btn, MemoPreview } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
 import {
@@ -74,9 +77,14 @@ export default function HomePage() {
   }
 
   const { start, end } = getRangeForPeriod(period, today);
+  const monthStart = useMemo(
+    () => new Date(today.getFullYear(), today.getMonth(), 1),
+    [today]
+  );
 
   const todayWork = workSessions.filter((w) => w.work_date === todayStr);
   const rangeWork = workSessions.filter((w) => isDateInRange(w.work_date, start, end));
+  const goWork = (id) => router.push(`/work/${id}`);
   const urgentDeadlines = deadlines
     .filter((d) => daysUntil(d.deadline_date) >= 0 && daysUntil(d.deadline_date) <= 7)
     .sort((a, b) => a.deadline_date.localeCompare(b.deadline_date));
@@ -131,7 +139,24 @@ export default function HomePage() {
           ))}
         </div>
 
-        {period === 'day' && <DayBar sessions={todayWork} onSelect={(id) => router.push(`/work/${id}`)} />}
+        {period === 'day' && <DayBar sessions={todayWork} onSelect={goWork} />}
+        {period === 'week' && (
+          <WeekScheduleView
+            sessions={rangeWork}
+            start={start}
+            end={end}
+            todayStr={todayStr}
+            onSelect={goWork}
+          />
+        )}
+        {period === 'month' && (
+          <MonthScheduleView
+            sessions={rangeWork}
+            monthStart={monthStart}
+            todayStr={todayStr}
+            onSelect={goWork}
+          />
+        )}
 
         {urgentDeadlines.length > 0 && (
           <div className="mb-4 rounded-lg border-l-4 border-red-500 bg-red-50 px-3.5 py-3">
@@ -161,12 +186,18 @@ export default function HomePage() {
         )}
 
         <h2 className="mb-2 text-sm font-semibold text-[#888]">
-          {period === 'day' ? '今日の作業時間' : period === 'week' ? '今週の作業時間' : '今月の作業時間'}
+          {period === 'day'
+            ? '今日の作業時間'
+            : period === 'week'
+              ? `今週の作業時間（${rangeWork.length}件）`
+              : `今月の作業時間（${rangeWork.length}件）`}
         </h2>
         {loading ? (
           <p className="text-sm text-[#888]">読み込み中…</p>
         ) : rangeWork.length === 0 ? (
           <p className="text-sm text-[#888]">予定がありません</p>
+        ) : period === 'week' || period === 'month' ? (
+          <CompactWorkList items={rangeWork} onSelect={goWork} />
         ) : (
           <ul>
             {rangeWork.map((w) => (
