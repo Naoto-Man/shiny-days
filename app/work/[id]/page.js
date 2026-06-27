@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import AppShell from '@/components/AppShell';
+import ColorPicker from '@/components/ColorPicker';
 import { BackHeader, Btn, Input, Label, Textarea } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
 
@@ -16,6 +17,7 @@ export default function EditWorkPage() {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [memo, setMemo] = useState('');
+  const [color, setColor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -38,6 +40,7 @@ export default function EditWorkPage() {
       setStartTime(data.start_time?.slice(0, 5) || '');
       setEndTime(data.end_time?.slice(0, 5) || '');
       setMemo(data.memo || '');
+      setColor(data.color || null);
       setLoading(false);
     }
     load();
@@ -54,6 +57,7 @@ export default function EditWorkPage() {
         work_date: workDate,
         start_time: startTime,
         end_time: endTime,
+        color: color || null,
         memo: memo || null,
       })
       .eq('id', id);
@@ -129,6 +133,8 @@ export default function EditWorkPage() {
               />
             </div>
           </div>
+
+          <ColorPicker value={color} onChange={setColor} />
 
           <Label htmlFor="memo">メモ（任意）</Label>
           <Textarea id="memo" rows={3} value={memo} onChange={(e) => setMemo(e.target.value)} />

@@ -1,7 +1,7 @@
 'use client';
 
 import { timeToMinutes } from '@/lib/dates';
-import { SCHEDULE_COLORS } from '@/components/scheduleColors';
+import { getSessionColor } from '@/components/scheduleColors';
 
 export default function MiniDayBar({
   sessions,
@@ -28,7 +28,7 @@ export default function MiniDayBar({
         const endMin = timeToMinutes(s.end_time);
         const left = (startMin / 1440) * 100;
         const width = Math.max(((endMin - startMin) / 1440) * 100, 3);
-        const color = SCHEDULE_COLORS[i % SCHEDULE_COLORS.length];
+        const color = getSessionColor(s);
         const label = s.title.length > 4 ? s.title.slice(0, 4) : s.title;
 
         return (

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import { Btn, Input, Label } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
-import { getRandomPraise } from '@/lib/praise';
+import { pickLoginPraise } from '@/lib/praiseMessages';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -28,7 +28,7 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
-      sessionStorage.setItem('praise', getRandomPraise());
+      sessionStorage.setItem('praise', await pickLoginPraise(supabase));
       router.push('/home');
     } else {
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
@@ -37,7 +37,7 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
-      sessionStorage.setItem('praise', getRandomPraise());
+      sessionStorage.setItem('praise', await pickLoginPraise(supabase));
       router.push('/home');
       router.refresh();
     }

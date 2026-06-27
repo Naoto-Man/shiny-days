@@ -1,6 +1,6 @@
 'use client';
 
-import { SCHEDULE_COLORS } from '@/components/scheduleColors';
+import { getSessionColor } from '@/components/scheduleColors';
 
 const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
 
@@ -18,7 +18,7 @@ function firstSessionOfDay(sessions) {
   return [...sessions].sort((a, b) => a.start_time.localeCompare(b.start_time))[0];
 }
 
-export default function MonthScheduleView({ sessions, monthStart, todayStr, onSelect }) {
+export default function MonthScheduleView({ sessions, monthStart, todayStr, onDateSelect, title }) {
   const year = monthStart.getFullYear();
   const month = monthStart.getMonth();
   const firstDay = new Date(year, month, 1).getDay();
@@ -37,7 +37,7 @@ export default function MonthScheduleView({ sessions, monthStart, todayStr, onSe
   return (
     <div className="mb-5 rounded-xl border border-[#e8ebf2] bg-[#f8f9fc] p-3.5">
       <h2 className="mb-3 text-[13px] font-semibold text-[#666]">
-        {year}年{month + 1}月のスケジュール
+        {title ?? `${year}年${month + 1}月のスケジュール`}
       </h2>
       <div className="mb-1 grid grid-cols-7 gap-1">
         {WEEKDAYS.map((w, i) => (
@@ -59,16 +59,18 @@ export default function MonthScheduleView({ sessions, monthStart, todayStr, onSe
           const first = firstSessionOfDay(daySessions);
           const isToday = dateStr === todayStr;
           const dow = new Date(year, month, day).getDay();
+          const firstColor = first ? getSessionColor(first) : null;
+
           const moreCount = daySessions.length > 1 ? daySessions.length - 1 : 0;
 
           return (
             <button
               key={dateStr}
               type="button"
-              onClick={() => first && onSelect?.(first.id)}
-              className={`flex min-h-[72px] flex-col rounded-lg border border-[#e8ebf2] bg-white p-1.5 text-left ${
+              onClick={() => onDateSelect?.(dateStr)}
+              className={`flex min-h-[72px] cursor-pointer flex-col rounded-lg border border-[#e8ebf2] bg-white p-1.5 text-left hover:bg-[#f8f9fc] ${
                 isToday ? 'ring-2 ring-red-500 ring-inset' : ''
-              } ${first ? 'cursor-pointer hover:bg-[#f8f9fc]' : 'cursor-default'}`}
+              }`}
             >
               <span
                 className={`text-[11px] font-semibold leading-none ${
@@ -87,11 +89,14 @@ export default function MonthScheduleView({ sessions, monthStart, todayStr, onSe
                 <div className="mt-1.5 flex min-h-0 flex-1 flex-col">
                   <span
                     className="mb-0.5 inline-block w-fit rounded px-1 py-0.5 text-[8px] font-bold text-white"
-                    style={{ background: SCHEDULE_COLORS[0] }}
+                    style={{ background: firstColor }}
                   >
                     {first.start_time?.slice(0, 5)}
                   </span>
-                  <span className="line-clamp-2 text-[10px] font-semibold leading-tight text-[#333]">
+                  <span
+                    className="line-clamp-2 text-[10px] font-semibold leading-tight"
+                    style={{ color: firstColor }}
+                  >
                     {first.title}
                   </span>
                   {moreCount > 0 && (
@@ -106,7 +111,7 @@ export default function MonthScheduleView({ sessions, monthStart, todayStr, onSe
         })}
       </div>
       <p className="mt-2 text-[10px] text-[#aaa]">
-        各マスには、その日の最初の予定を表示しています
+        日付をタップすると、その日の1日表示に移動します
       </p>
     </div>
   );

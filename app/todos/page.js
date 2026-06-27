@@ -6,7 +6,6 @@ import AppShell from '@/components/AppShell';
 import MultiCalendar from '@/components/MultiCalendar';
 import { BackHeader, Btn, Input, Label, MemoPreview, Textarea } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
-import { toDateInputValue } from '@/lib/dates';
 
 export default function TodosPage() {
   const router = useRouter();
@@ -19,7 +18,7 @@ export default function TodosPage() {
   const [memo, setMemo] = useState('');
   const [memoModal, setMemoModal] = useState(null);
   const [scheduleTodo, setScheduleTodo] = useState(null);
-  const [selectedDays, setSelectedDays] = useState(new Set([toDateInputValue(today)]));
+  const [selectedDays, setSelectedDays] = useState(new Set());
   const [startTime, setStartTime] = useState('19:00');
   const [endTime, setEndTime] = useState('20:00');
   const [saving, setSaving] = useState(false);
@@ -65,7 +64,7 @@ export default function TodosPage() {
 
   function openSchedule(todo) {
     setScheduleTodo(todo);
-    setSelectedDays(new Set([toDateInputValue(today)]));
+    setSelectedDays(new Set());
     setStartTime('19:00');
     setEndTime('20:00');
   }

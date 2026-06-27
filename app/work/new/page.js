@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import MultiCalendar from '@/components/MultiCalendar';
+import ColorPicker from '@/components/ColorPicker';
 import { BackHeader, Btn, Input, Label, Textarea } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
-import { toDateInputValue } from '@/lib/dates';
 
 export default function NewWorkPage() {
   const router = useRouter();
@@ -15,7 +15,8 @@ export default function NewWorkPage() {
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('10:00');
   const [memo, setMemo] = useState('');
-  const [selectedDays, setSelectedDays] = useState(new Set([toDateInputValue(today)]));
+  const [color, setColor] = useState(null);
+  const [selectedDays, setSelectedDays] = useState(new Set());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -52,6 +53,7 @@ export default function NewWorkPage() {
       work_date,
       start_time: startTime,
       end_time: endTime,
+      color: color || null,
       memo: memo || null,
     }));
 
@@ -120,6 +122,8 @@ export default function NewWorkPage() {
               />
             </div>
           </div>
+
+          <ColorPicker value={color} onChange={setColor} />
 
           <Label htmlFor="memo">メモ（任意）</Label>
           <Textarea id="memo" rows={3} value={memo} onChange={(e) => setMemo(e.target.value)} />

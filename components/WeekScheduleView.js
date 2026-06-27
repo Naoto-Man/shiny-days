@@ -12,13 +12,13 @@ function groupByDate(sessions) {
   return map;
 }
 
-export default function WeekScheduleView({ sessions, start, end, todayStr, onSelect }) {
+export default function WeekScheduleView({ sessions, start, end, todayStr, onSelect, title = '今週のスケジュール' }) {
   const dates = getDatesInRange(start, end);
   const byDate = groupByDate(sessions);
 
   return (
     <div className="mb-5 rounded-xl border border-[#e8ebf2] bg-[#f8f9fc] p-3.5">
-      <h2 className="mb-3 text-[13px] font-semibold text-[#666]">今週のスケジュール</h2>
+      <h2 className="mb-3 text-[13px] font-semibold text-[#666]">{title}</h2>
       <div className="space-y-2.5">
         {dates.map((dateStr) => {
           const daySessions = byDate[dateStr] || [];

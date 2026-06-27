@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import { BackHeader, Btn, Input, Label } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
+import { normalizeTimeInput } from '@/lib/dates';
 
 export default function EditDeadlinePage() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function EditDeadlinePage() {
 
   const [title, setTitle] = useState('');
   const [deadlineDate, setDeadlineDate] = useState('');
+  const [deadlineTime, setDeadlineTime] = useState('23:59');
   const [memo, setMemo] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -29,6 +31,7 @@ export default function EditDeadlinePage() {
       }
       setTitle(data.title);
       setDeadlineDate(data.deadline_date);
+      setDeadlineTime(normalizeTimeInput(data.deadline_time));
       setMemo(data.memo || '');
       setLoading(false);
     }
@@ -41,7 +44,12 @@ export default function EditDeadlinePage() {
     const supabase = createClient();
     const { error: updateError } = await supabase
       .from('deadlines')
-      .update({ title, deadline_date: deadlineDate, memo: memo || null })
+      .update({
+        title,
+        deadline_date: deadlineDate,
+        deadline_time: deadlineTime,
+        memo: memo || null,
+      })
       .eq('id', id);
     if (updateError) {
       setError(updateError.message);
@@ -81,14 +89,31 @@ export default function EditDeadlinePage() {
         <form onSubmit={handleSave}>
           <Label htmlFor="title">タイトル</Label>
           <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-          <Label htmlFor="date">締切日</Label>
-          <Input
-            id="date"
-            type="date"
-            value={deadlineDate}
-            onChange={(e) => setDeadlineDate(e.target.value)}
-            required
-          />
+          <Label>締切日時</Label>
+          <div className="mb-4 flex gap-2.5">
+            <div className="flex-[2]">
+              <Label htmlFor="date">日付</Label>
+              <Input
+                id="date"
+                type="date"
+                value={deadlineDate}
+                onChange={(e) => setDeadlineDate(e.target.value)}
+                className="!mb-0"
+                required
+              />
+            </div>
+            <div className="flex-1">
+              <Label htmlFor="time">時刻</Label>
+              <Input
+                id="time"
+                type="time"
+                value={deadlineTime}
+                onChange={(e) => setDeadlineTime(e.target.value)}
+                className="!mb-0"
+                required
+              />
+            </div>
+          </div>
           <Label htmlFor="memo">メモ（任意）</Label>
           <Input id="memo" value={memo} onChange={(e) => setMemo(e.target.value)} />
           {error && <p className="mb-4 text-sm text-red-600">{error}</p>}

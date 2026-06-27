@@ -11,6 +11,7 @@ export default function NewDeadlinePage() {
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [deadlineDate, setDeadlineDate] = useState(toDateInputValue());
+  const [deadlineTime, setDeadlineTime] = useState('23:59');
   const [memo, setMemo] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -27,6 +28,7 @@ export default function NewDeadlinePage() {
       user_id: user.id,
       title,
       deadline_date: deadlineDate,
+      deadline_time: deadlineTime,
       memo: memo || null,
     });
 
@@ -51,14 +53,31 @@ export default function NewDeadlinePage() {
         <form onSubmit={handleSave}>
           <Label htmlFor="title">タイトル</Label>
           <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-          <Label htmlFor="date">締切日</Label>
-          <Input
-            id="date"
-            type="date"
-            value={deadlineDate}
-            onChange={(e) => setDeadlineDate(e.target.value)}
-            required
-          />
+          <Label>締切日時</Label>
+          <div className="mb-4 flex gap-2.5">
+            <div className="flex-[2]">
+              <Label htmlFor="date">日付</Label>
+              <Input
+                id="date"
+                type="date"
+                value={deadlineDate}
+                onChange={(e) => setDeadlineDate(e.target.value)}
+                className="!mb-0"
+                required
+              />
+            </div>
+            <div className="flex-1">
+              <Label htmlFor="time">時刻</Label>
+              <Input
+                id="time"
+                type="time"
+                value={deadlineTime}
+                onChange={(e) => setDeadlineTime(e.target.value)}
+                className="!mb-0"
+                required
+              />
+            </div>
+          </div>
           <Label htmlFor="memo">メモ（任意）</Label>
           <Input
             id="memo"
